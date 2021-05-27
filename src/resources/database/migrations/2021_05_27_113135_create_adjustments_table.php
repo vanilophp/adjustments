@@ -16,7 +16,7 @@ class CreateAdjustmentsTable extends Migration
             $table->string('adjustable_type'); // eg. Cart, Order, Order Item
             $table->bigInteger('adjustable_id')->unsigned(); // eg. cart id, order item id, etc
             $table->string('adjuster'); // the adjuster type eg. FixedAmountFee, PercentageFee
-            $table->string('adjuster_identifier')->nullable(); // eg. the id of the promotion entry in the db
+            $table->string('origin')->nullable(); // eg. the id of the promotion entry in the db
             $table->json('data')->nullable(); // Additional data needed by the adjuster
             $table->string('title'); // The title to show for end users (eg. in product lists)
             $table->string('description')->nullable(); // A longer description to show (eg. in cart or order confirmation email)

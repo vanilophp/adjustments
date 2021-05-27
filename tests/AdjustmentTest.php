@@ -86,7 +86,7 @@ class AdjustmentTest extends TestCase
             'adjustable_type' => 'order',
             'adjustable_id' => 22791,
             'adjuster' => 'fixed_amount',
-            'adjuster_identifier' => 'xgs123',
+            'origin' => 'xgs123',
             'title' => 'Shipping',
             'description' => 'UPS Ground Delivery (1-3 days)',
             'data' => ['yo' => 'mo', 'do' => 'jo'],
@@ -99,7 +99,7 @@ class AdjustmentTest extends TestCase
         $this->assertEquals('order', $adjustment->adjustable_type);
         $this->assertEquals(22791, $adjustment->adjustable_id);
         $this->assertEquals('fixed_amount', $adjustment->adjuster);
-        $this->assertEquals('xgs123', $adjustment->adjuster_identifier);
+        $this->assertEquals('xgs123', $adjustment->origin);
         $this->assertEquals('Shipping', $adjustment->title);
         $this->assertEquals('UPS Ground Delivery (1-3 days)', $adjustment->description);
         $this->assertEquals(['yo' => 'mo', 'do' => 'jo'], $adjustment->data);
@@ -117,19 +117,22 @@ class AdjustmentTest extends TestCase
         $adjustment->adjustable_type = 'order_item';
         $adjustment->adjustable_id = 225487;
         $adjustment->adjuster = 'fixed_amount';
-        $adjustment->adjuster_identifier = 555;
+        $adjustment->origin = 555;
         $adjustment->title = 'Discount';
         $adjustment->description = 'Boxing Day Sale';
         $adjustment->data = ['be' => 'ba', 'bu' => 'bi'];
         $adjustment->amount = 11;
         $adjustment->is_locked = true;
         $adjustment->is_included = true;
+        $adjustment->save();
+
+        $adjustment = $adjustment->fresh();
 
         $this->assertEquals(AdjustmentType::PROMOTION, $adjustment->type->value());
         $this->assertEquals('order_item', $adjustment->adjustable_type);
         $this->assertEquals(225487, $adjustment->adjustable_id);
         $this->assertEquals('fixed_amount', $adjustment->adjuster);
-        $this->assertEquals('555', $adjustment->adjuster_identifier);
+        $this->assertEquals('555', $adjustment->origin);
         $this->assertEquals('Discount', $adjustment->title);
         $this->assertEquals('Boxing Day Sale', $adjustment->description);
         $this->assertIsArray($adjustment->data);
@@ -137,5 +140,86 @@ class AdjustmentTest extends TestCase
         $this->assertEquals(11, $adjustment->amount);
         $this->assertTrue($adjustment->is_locked);
         $this->assertTrue($adjustment->is_included);
+    }
+
+    /** @test */
+    public function the_interface_getters_are_working_on_the_model()
+    {
+        /** @var Adjustment $adjustment */
+        $adjustment = Adjustment::create([
+            'type' => AdjustmentType::TAX,
+            'adjustable_type' => 'order',
+            'adjustable_id' => 15496,
+            'adjuster' => 'fixed_amount',
+            'origin' => 'MMM',
+            'title' => 'VAT',
+            'description' => 'VAT 21% (NL)',
+            'data' => ['buff' => 'muff'],
+            'amount' => 21.22,
+            'is_locked' => true,
+            'is_included' => true,
+        ]);
+
+        $this->assertTrue($adjustment->getType()->isTax());
+        $this->assertEquals('MMM', $adjustment->getOrigin());
+        $this->assertEquals('VAT', $adjustment->getTitle());
+        $this->assertEquals('VAT 21% (NL)', $adjustment->getDescription());
+        $this->assertEquals(['buff' => 'muff'], $adjustment->getData());
+        $this->assertEquals(21.22, $adjustment->getAmount());
+        $this->assertTrue($adjustment->isLocked());
+        $this->assertTrue($adjustment->isIncluded());
+    }
+
+    /** @test */
+    public function it_can_be_locked()
+    {
+        $adjustment = Adjustment::create([
+            'type' => AdjustmentType::TAX,
+            'adjustable_type' => 'order',
+            'adjustable_id' => 1,
+            'adjuster' => 'fixed_amount',
+            'title' => 'Sales tax',
+        ]);
+
+        $this->assertFalse($adjustment->isLocked());
+        $adjustment->lock();
+
+        $this->assertTrue($adjustment->isLocked());
+
+        $adjustment = $adjustment->fresh();
+        $this->assertTrue($adjustment->isLocked());
+    }
+
+    /** @test */
+    public function it_can_be_unlocked()
+    {
+        $adjustment = Adjustment::create([
+            'type' => AdjustmentType::TAX,
+            'adjustable_type' => 'order',
+            'adjustable_id' => 1,
+            'adjuster' => 'fixed_amount',
+            'title' => 'Sales tax',
+            'is_locked' => true,
+        ]);
+
+        $this->assertTrue($adjustment->isLocked());
+        $adjustment->unlock();
+
+        $this->assertFalse($adjustment->isLocked());
+
+        $adjustment = $adjustment->fresh();
+        $this->assertFalse($adjustment->isLocked());
+    }
+
+    /** @test */
+    public function it_resolves_the_adjustable()
+    {
+        $this->markTestIncomplete('Implement both prod/test code');
+    }
+
+    /** @test */
+    public function it_resolves_the_adjuster()
+    {
+        $this->markTestIncomplete('Implement both prod/test code');
     }
 }
