@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Contains the AdjustmentCollection class.
+ * Contains the ArrayAdjustmentCollection class.
  *
  * @copyright   Copyright (c) 2021 Attila Fulop
  * @author      Attila Fulop
@@ -18,13 +18,19 @@ use Vanilo\Adjustments\Contracts\Adjustment;
 use Vanilo\Adjustments\Contracts\AdjustmentCollection as AdjustmentCollectionContract;
 use Vanilo\Adjustments\Contracts\AdjustmentType;
 
-class AdjustmentCollection implements AdjustmentCollectionContract
+class ArrayAdjustmentCollection implements AdjustmentCollectionContract
 {
+    /** @var Adjustment[] */
     private array $items = [];
 
     public function total(): float
     {
-        // TODO: Implement total() method.
+        $result = 0;
+        foreach ($this->items as $adjustment) {
+            $result += $adjustment->getAmount();
+        }
+
+        return $result;
     }
 
     public function isEmpty(): bool
@@ -39,37 +45,53 @@ class AdjustmentCollection implements AdjustmentCollectionContract
 
     public function add(Adjustment $adjustment): void
     {
-        // TODO: Implement add() method.
+        $this->items[] = $adjustment;
     }
 
     public function remove(Adjustment $adjustment): void
     {
-        // TODO: Implement remove() method.
+
+        foreach ($this->items as $key => $item) {
+            if ($item === $adjustment) {
+                unset($this->items[$key]);
+            }
+        }
     }
 
     public function byType(AdjustmentType $type): AdjustmentCollectionContract
     {
-        // TODO: Implement byType() method.
+        $result = new self();
+        foreach ($this->items as $adjustment) {
+            if ($type->equals($adjustment->getType())) {
+                $result->add($adjustment);
+            }
+        }
+
+        return $result;
     }
 
     public function offsetExists($offset)
     {
-        // TODO: Implement offsetExists() method.
+        return isset($this->items[$offset]);
     }
 
     public function offsetGet($offset)
     {
-        // TODO: Implement offsetGet() method.
+        return $this->items[$offset];
     }
 
     public function offsetSet($offset, $value)
     {
-        // TODO: Implement offsetSet() method.
+        if (!is_object($value) || ! ($value instanceof Adjustment)) {
+            throw new \InvalidArgumentException('Only objects implementing the Adjustment interface can be used');
+        }
+
+        $this->items[$offset] = $value;
     }
 
     public function offsetUnset($offset)
     {
-        // TODO: Implement offsetUnset() method.
+        unset($this->items[$offset]);
     }
 
     public function count()

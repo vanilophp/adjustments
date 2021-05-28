@@ -18,7 +18,7 @@ interface Adjustable
 {
     public static function findById($id): ?Adjustable;
 
-    public function addAdjustment(Adjustment $adjustment): void;
+    public function adjustments(): AdjustmentCollection;
 
-    public function adjustments();
+    public function recalculateAdjustments(): void;
 }

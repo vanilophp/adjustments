@@ -24,7 +24,7 @@ class SimpleFeeTest extends TestCase
     public function a_simple_fee_can_be_added_to_an_adjustable_order()
     {
         $order = Order::create(['items_total' => 10.99]);
-        $order->addAdjustment(new Adjustment());
+        $order->adjustments()->add(new Adjustment());
 
     }
 }
