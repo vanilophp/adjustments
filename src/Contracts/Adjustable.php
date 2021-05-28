@@ -16,4 +16,5 @@ namespace Vanilo\Adjustments\Contracts;
 
 interface Adjustable
 {
+    public static function findById($id): ?Adjustable;
 }

@@ -24,7 +24,7 @@ use Vanilo\Adjustments\Contracts\AdjustmentType;
 
 /**
  * @property int $id
- * @property string $type
+ * @property AdjustmentType $type
  * @property string $adjustable_type
  * @property int $adjustable_id
  * @property string $adjuster
@@ -37,6 +37,8 @@ use Vanilo\Adjustments\Contracts\AdjustmentType;
  * @property boolean $is_included
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ *
+ * @method static Adjustment create(array $attributes = [])
  */
 class Adjustment extends Model implements AdjustmentContract
 {
@@ -78,12 +80,18 @@ class Adjustment extends Model implements AdjustmentContract
 
     public function getAdjustable(): Adjustable
     {
-        // TODO: Implement getAdjustable() method.
+        $type = $this->adjustable_type;
+        if (class_exists($type)) {
+            return forward_static_call([$type, 'findById'], $this->adjustable_id);
+        }
     }
 
     public function getAdjuster(): Adjuster
     {
-        // TODO: Implement getAdjuster() method.
+        $adjusterType = $this->adjuster;
+        if (class_exists($this->adjuster)) {
+            return forward_static_call([$adjusterType, 'fromAdjustable'], $this->getAdjustable());
+        }
     }
 
     public function getOrigin(): ?string

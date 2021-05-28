@@ -14,9 +14,13 @@ declare(strict_types=1);
 
 namespace Vanilo\Adjustments\Tests;
 
+use Vanilo\Adjustments\Adjusters\FixedAmountFee;
+use Vanilo\Adjustments\Contracts\Adjustable;
+use Vanilo\Adjustments\Contracts\Adjuster;
 use Vanilo\Adjustments\Contracts\Adjustment as AdjustmentContract;
 use Vanilo\Adjustments\Models\Adjustment;
 use Vanilo\Adjustments\Models\AdjustmentType;
+use Vanilo\Adjustments\Tests\Examples\Order;
 
 class AdjustmentTest extends TestCase
 {
@@ -212,14 +216,38 @@ class AdjustmentTest extends TestCase
     }
 
     /** @test */
-    public function it_resolves_the_adjustable()
+    public function it_resolves_the_adjustable_if_the_adjustable_type_is_a_fqcn()
     {
-        $this->markTestIncomplete('Implement both prod/test code');
+        $order = Order::create(['items_total' => 120]);
+
+        /** @var Adjustment $adjustment */
+        $adjustment = Adjustment::create([
+            'type' => AdjustmentType::TAX,
+            'adjustable_type' => Order::class,
+            'adjustable_id' => $order->id,
+            'adjuster' => 'fixed_amount',
+            'title' => 'Sales tax',
+            'is_locked' => true,
+        ]);
+
+        $this->assertInstanceOf(Adjustable::class, $adjustment->getAdjustable());
+        $this->assertInstanceOf(Order::class, $adjustment->getAdjustable());
     }
 
     /** @test */
-    public function it_resolves_the_adjuster()
+    public function it_resolves_the_adjuster_if_the_adjuster_is_a_fqcn()
     {
-        $this->markTestIncomplete('Implement both prod/test code');
+        $order = Order::create(['items_total' => 120]);
+        $adjustment = Adjustment::create([
+            'type' => AdjustmentType::TAX,
+            'adjustable_type' => Order::class,
+            'adjustable_id' => $order->id,
+            'adjuster' => FixedAmountFee::class,
+            'title' => 'Sales tax',
+            'is_locked' => true,
+        ]);
+
+        $this->assertInstanceOf(Adjuster::class, $adjustment->getAdjuster());
+        $this->assertInstanceOf(FixedAmountFee::class, $adjustment->getAdjuster());
     }
 }
