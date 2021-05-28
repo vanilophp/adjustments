@@ -12,7 +12,7 @@ declare(strict_types=1);
  *
  */
 
-namespace Vanilo\Adjustments\Tests;
+namespace Vanilo\Adjustments\Unit\Tests;
 
 use Vanilo\Adjustments\Adjusters\FixedAmountFee;
 use Vanilo\Adjustments\Contracts\Adjustable;
@@ -21,6 +21,7 @@ use Vanilo\Adjustments\Contracts\Adjustment as AdjustmentContract;
 use Vanilo\Adjustments\Models\Adjustment;
 use Vanilo\Adjustments\Models\AdjustmentType;
 use Vanilo\Adjustments\Tests\Examples\Order;
+use Vanilo\Adjustments\Tests\TestCase;
 
 class AdjustmentTest extends TestCase
 {

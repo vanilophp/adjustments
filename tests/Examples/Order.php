@@ -17,6 +17,9 @@ namespace Vanilo\Adjustments\Tests\Examples;
 use Illuminate\Database\Eloquent\Model;
 use Vanilo\Adjustments\Contracts\Adjustable;
 
+/**
+ * @method static Order create(array $attributes = [])
+ */
 class Order extends Model implements Adjustable
 {
     protected $guarded = ['created_at', 'updated_at'];
