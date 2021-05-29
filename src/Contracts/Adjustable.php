@@ -14,11 +14,15 @@ declare(strict_types=1);
 
 namespace Vanilo\Adjustments\Contracts;
 
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+
 interface Adjustable
 {
-    public static function findById($id): ?Adjustable;
+    public function itemsTotal(): float;
 
     public function adjustments(): AdjustmentCollection;
+
+    public function adjustmentsRelation(): MorphMany;
 
     public function recalculateAdjustments(): void;
 }

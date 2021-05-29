@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Vanilo\Adjustments\Tests\Feature;
 
 use Vanilo\Adjustments\Models\Adjustment;
+use Vanilo\Adjustments\Models\AdjustmentType;
 use Vanilo\Adjustments\Tests\Examples\Order;
 use Vanilo\Adjustments\Tests\TestCase;
 
@@ -24,7 +25,13 @@ class SimpleFeeTest extends TestCase
     public function a_simple_fee_can_be_added_to_an_adjustable_order()
     {
         $order = Order::create(['items_total' => 10.99]);
-        $order->adjustments()->add(new Adjustment());
+        $order->adjustments()->create([
+            'type' => AdjustmentType::SHIPPING,
+            'adjuster' => 'x',
+            'title' => 'Shipping fee',
+            'amount' => 11.2,
+        ]);
 
+        $this->assertCount(1, $order->adjustments);
     }
 }

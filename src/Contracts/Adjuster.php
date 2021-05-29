@@ -16,7 +16,7 @@ namespace Vanilo\Adjustments\Contracts;
 
 interface Adjuster
 {
-    public static function fromAdjustable(Adjustable $adjustable): Adjuster;
+    public function createAdjustment(Adjustable $adjustable): Adjustment;
 
-    public function calculate(): float;
+    public function recalculate(Adjustment $adjustment, Adjustable $adjustable): Adjustment;
 }

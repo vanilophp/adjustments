@@ -12,9 +12,9 @@ declare(strict_types=1);
  *
  */
 
-namespace Vanilo\Adjustments\Unit\Tests;
+namespace Vanilo\Adjustments\Tests\Unit;
 
-use Vanilo\Adjustments\Adjusters\FixedAmountFee;
+use Vanilo\Adjustments\Adjusters\SimpleShippingFee;
 use Vanilo\Adjustments\Contracts\Adjustable;
 use Vanilo\Adjustments\Contracts\Adjuster;
 use Vanilo\Adjustments\Contracts\Adjustment as AdjustmentContract;
@@ -243,12 +243,12 @@ class AdjustmentTest extends TestCase
             'type' => AdjustmentType::TAX,
             'adjustable_type' => Order::class,
             'adjustable_id' => $order->id,
-            'adjuster' => FixedAmountFee::class,
+            'adjuster' => SimpleShippingFee::class,
             'title' => 'Sales tax',
             'is_locked' => true,
         ]);
 
         $this->assertInstanceOf(Adjuster::class, $adjustment->getAdjuster());
-        $this->assertInstanceOf(FixedAmountFee::class, $adjustment->getAdjuster());
+        $this->assertInstanceOf(SimpleShippingFee::class, $adjustment->getAdjuster());
     }
 }

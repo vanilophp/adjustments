@@ -14,6 +14,8 @@ declare(strict_types=1);
 
 namespace Vanilo\Adjustments\Support;
 
+use Vanilo\Adjustments\Contracts\Adjustable;
+use Vanilo\Adjustments\Contracts\Adjuster;
 use Vanilo\Adjustments\Contracts\Adjustment;
 use Vanilo\Adjustments\Contracts\AdjustmentCollection as AdjustmentCollectionContract;
 use Vanilo\Adjustments\Contracts\AdjustmentType;
@@ -22,6 +24,18 @@ class ArrayAdjustmentCollection implements AdjustmentCollectionContract
 {
     /** @var Adjustment[] */
     private array $items = [];
+
+    private Adjustable $adjustable;
+
+    public function __construct(Adjustable $adjustable)
+    {
+        $this->adjustable = $adjustable;
+    }
+
+    public function adjustable(): Adjustable
+    {
+        return $this->adjustable;
+    }
 
     public function total(): float
     {
@@ -46,6 +60,14 @@ class ArrayAdjustmentCollection implements AdjustmentCollectionContract
     public function add(Adjustment $adjustment): void
     {
         $this->items[] = $adjustment;
+    }
+
+    public function create(Adjuster $adjuster): Adjustment
+    {
+        $adjustment = $adjuster->createAdjustment($this->adjustable);
+        $this->add($adjustment);
+
+        return $adjustment;
     }
 
     public function remove(Adjustment $adjustment): void

@@ -30,15 +30,17 @@ interface Adjustment
 
     public function getAmount(): float;
 
+    public function setAmount(float $amount): void;
+
     public function getData(): array;
 
     /**
-     * Adjustments with amount < 0 are called "charges".
+     * Adjustments that increase the total are called "charges".
      */
     public function isCharge(): bool;
 
     /**
-     * Adjustments with amount > 0 are called "credits".
+     * Adjustments that decrease the total are called "credits".
      */
     public function isCredit(): bool;
 

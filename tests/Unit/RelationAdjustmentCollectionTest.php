@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 /**
- * Contains the ArrayAdjustmentCollectionTest class.
+ * Contains the RelationAdjustmentCollectionTest class.
  *
  * @copyright   Copyright (c) 2021 Attila Fulop
  * @author      Attila Fulop
  * @license     MIT
- * @since       2021-05-28
+ * @since       2021-05-29
  *
  */
 
@@ -21,22 +21,25 @@ use Vanilo\Adjustments\Adjusters\SimpleShippingFee;
 use Vanilo\Adjustments\Contracts\AdjustmentCollection;
 use Vanilo\Adjustments\Models\Adjustment;
 use Vanilo\Adjustments\Models\AdjustmentType;
-use Vanilo\Adjustments\Support\ArrayAdjustmentCollection;
+use Vanilo\Adjustments\Support\RelationAdjustmentCollection;
 use Vanilo\Adjustments\Tests\Examples\Order;
 use Vanilo\Adjustments\Tests\TestCase;
 
-class ArrayAdjustmentCollectionTest extends TestCase
+class RelationAdjustmentCollectionTest extends TestCase
 {
     /** @test */
     public function it_implements_the_interface()
     {
-        $this->assertInstanceOf(AdjustmentCollection::class, new ArrayAdjustmentCollection());
+        $this->assertInstanceOf(
+            AdjustmentCollection::class,
+            new RelationAdjustmentCollection(new Order())
+        );
     }
 
     /** @test */
     public function it_is_empty_by_default()
     {
-        $c = new ArrayAdjustmentCollection();
+        $c = new RelationAdjustmentCollection(new Order());
 
         $this->assertTrue($c->isEmpty());
         $this->assertEmpty($c);
@@ -46,7 +49,7 @@ class ArrayAdjustmentCollectionTest extends TestCase
     /** @test */
     public function it_is_countable()
     {
-        $c = new ArrayAdjustmentCollection();
+        $c = new RelationAdjustmentCollection(new Order());
 
         $this->assertInstanceOf(Countable::class, $c);
         $this->assertCount(0, $c);
@@ -55,18 +58,19 @@ class ArrayAdjustmentCollectionTest extends TestCase
     /** @test */
     public function items_can_be_added_to_it()
     {
-        $c = new ArrayAdjustmentCollection();
+        $order = new Order();
+        $collection = new RelationAdjustmentCollection($order);
 
-        $c->add(new Adjustment());
-        $this->assertCount(1, $c);
-        $this->assertFalse($c->isEmpty());
-        $this->assertTrue($c->isNotEmpty());
+        $collection->add(new SimpleShippingFee($order));
+        $this->assertCount(1, $collection);
+        $this->assertFalse($collection->isEmpty());
+        $this->assertTrue($collection->isNotEmpty());
     }
 
     /** @test */
     public function an_item_can_be_removed_from_it()
     {
-        $collection = new ArrayAdjustmentCollection();
+        $collection = new RelationAdjustmentCollection();
 
         $adjustment = new Adjustment();
         $collection->add($adjustment);
@@ -77,20 +81,9 @@ class ArrayAdjustmentCollectionTest extends TestCase
     }
 
     /** @test */
-    public function items_can_be_created_from_adjusters()
-    {
-        $collection = new ArrayAdjustmentCollection(new Order());
-
-        $collection->create(new SimpleShippingFee(4.69));
-        $this->assertCount(1, $collection);
-
-        $this->assertEquals(4.69, $collection->total());
-    }
-
-    /** @test */
     public function the_total_can_be_retrieved()
     {
-        $collection = new ArrayAdjustmentCollection();
+        $collection = new RelationAdjustmentCollection();
 
         $collection->add(new Adjustment(['amount' => 32.21]));
         $collection->add(new Adjustment(['amount' => 21.32]));
@@ -101,7 +94,7 @@ class ArrayAdjustmentCollectionTest extends TestCase
     /** @test */
     public function items_can_be_accessed_as_array_members()
     {
-        $collection = new ArrayAdjustmentCollection();
+        $collection = new RelationAdjustmentCollection();
 
         $collection->add(new Adjustment(['type' => AdjustmentType::PROMOTION, 'amount' => 10]));
         $collection->add(new Adjustment(['type' => AdjustmentType::SHIPPING, 'amount' => 4.79]));
@@ -118,7 +111,7 @@ class ArrayAdjustmentCollectionTest extends TestCase
     /** @test */
     public function existence_of_array_items_can_be_checked_using_isset()
     {
-        $collection = new ArrayAdjustmentCollection();
+        $collection = new RelationAdjustmentCollection();
 
         $collection->add(new Adjustment());
         $collection->add(new Adjustment());
@@ -131,7 +124,7 @@ class ArrayAdjustmentCollectionTest extends TestCase
     /** @test */
     public function items_can_directly_set_via_array_mutator()
     {
-        $collection = new ArrayAdjustmentCollection();
+        $collection = new RelationAdjustmentCollection();
 
         $collection[0] = new Adjustment();
 
@@ -142,7 +135,7 @@ class ArrayAdjustmentCollectionTest extends TestCase
     /** @test */
     public function only_adjustment_object_instances_are_accepted_in_the_array_mutator()
     {
-        $collection = new ArrayAdjustmentCollection();
+        $collection = new RelationAdjustmentCollection();
 
         $this->expectException(InvalidArgumentException::class);
         $collection[0] = new stdClass();
@@ -151,7 +144,7 @@ class ArrayAdjustmentCollectionTest extends TestCase
     /** @test */
     public function items_can_be_unset()
     {
-        $collection = new ArrayAdjustmentCollection();
+        $collection = new RelationAdjustmentCollection();
 
         $collection->add(new Adjustment(['amount' => 3]));
         $collection->add(new Adjustment(['amount' => 4]));
@@ -166,7 +159,7 @@ class ArrayAdjustmentCollectionTest extends TestCase
     /** @test */
     public function items_can_be_filtered_by_type()
     {
-        $c = new ArrayAdjustmentCollection();
+        $c = new RelationAdjustmentCollection();
 
         $c->add(new Adjustment(['type' => AdjustmentType::PROMOTION]));
         $c->add(new Adjustment(['type' => AdjustmentType::PROMOTION]));

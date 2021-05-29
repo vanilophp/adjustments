@@ -19,11 +19,15 @@ use Countable;
 
 interface AdjustmentCollection extends ArrayAccess, Countable
 {
+    public function adjustable(): Adjustable;
+
     public function total(): float;
 
     public function isEmpty(): bool;
 
     public function isNotEmpty(): bool;
+
+    public function create(Adjuster $adjuster): Adjustment;
 
     public function add(Adjustment $adjustment): void;
 

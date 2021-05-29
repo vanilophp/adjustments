@@ -16,6 +16,7 @@ namespace Vanilo\Adjustments\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Konekt\Enum\Eloquent\CastsEnums;
 use Vanilo\Adjustments\Contracts\Adjustable;
 use Vanilo\Adjustments\Contracts\Adjuster;
@@ -73,6 +74,11 @@ class Adjustment extends Model implements AdjustmentContract
         });
     }
 
+    public function adjustable(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
     public function getType(): AdjustmentType
     {
         return $this->type;
@@ -80,10 +86,7 @@ class Adjustment extends Model implements AdjustmentContract
 
     public function getAdjustable(): Adjustable
     {
-        $type = $this->adjustable_type;
-        if (class_exists($type)) {
-            return forward_static_call([$type, 'findById'], $this->adjustable_id);
-        }
+        return $this->adjustable;
     }
 
     public function getAdjuster(): Adjuster
@@ -112,6 +115,11 @@ class Adjustment extends Model implements AdjustmentContract
     public function getAmount(): float
     {
         return $this->amount;
+    }
+
+    public function setAmount(float $amount): void
+    {
+        $this->amount = $amount;
     }
 
     public function getData(): array
