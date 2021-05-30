@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Vanilo\Adjustments\Contracts\Adjustable;
+use Vanilo\Adjustments\Contracts\Adjuster;
 use Vanilo\Adjustments\Contracts\Adjustment;
 use Vanilo\Adjustments\Contracts\AdjustmentCollection;
 use Vanilo\Adjustments\Contracts\AdjustmentType;
@@ -26,9 +27,24 @@ class RelationAdjustmentCollection implements AdjustmentCollection
 {
     private Adjustable $model;
 
+    private ?AdjustmentType $typeFilter = null;
+
     public function __construct(Adjustable $model)
     {
         $this->model = $model;
+    }
+
+    public function adjustable(): Adjustable
+    {
+        return $this->model;
+    }
+
+    public function create(Adjuster $adjuster): Adjustment
+    {
+        $adjustment = $adjuster->createAdjustment($this->adjustable());
+        $this->add($adjustment);
+
+        return $adjustment;
     }
 
     public function total(): float
@@ -48,9 +64,10 @@ class RelationAdjustmentCollection implements AdjustmentCollection
 
     public function add(Adjustment $adjustment): void
     {
-        $this->relation()->create(
-            $this->adjustmentToModelAttributes($adjustment)
-        );
+        $adjustment->setAdjustable($this->model);
+        $this->relation()->save($adjustment);
+        // Refresh the collection so that the new element to shows up
+        $this->model->load('adjustmentsRelation');
     }
 
     public function remove(Adjustment $adjustment): void
@@ -69,47 +86,39 @@ class RelationAdjustmentCollection implements AdjustmentCollection
 
     public function byType(AdjustmentType $type): AdjustmentCollection
     {
-        // TODO: Implement byType() method.
+        $result = new self($this->model);
+        $result->typeFilter = $type;
+
+        return $result;
     }
 
     public function offsetExists($offset)
     {
-        // TODO: Implement offsetExists() method.
+        return $this->eloquentCollection()->offsetExists($offset);
     }
 
     public function offsetGet($offset)
     {
-        // TODO: Implement offsetGet() method.
+        return $this->eloquentCollection()->offsetGet($offset);
     }
 
     public function offsetSet($offset, $value)
     {
-        // TODO: Implement offsetSet() method.
+        if (!is_object($value) || ! ($value instanceof Adjustment)) {
+            throw new \InvalidArgumentException('Only objects implementing the Adjustment interface can be used');
+        }
+
+        $this->eloquentCollection()->offsetSet($offset, $value);
     }
 
     public function offsetUnset($offset)
     {
-        // TODO: Implement offsetUnset() method.
+        $this->eloquentCollection()->offsetUnset($offset);
     }
 
     public function count()
     {
-        // TODO: Implement count() method.
-    }
-
-    private function adjustmentToModelAttributes(Adjustment $adjustment): array
-    {
-        return [
-            'type' => $adjustment->getType(),
-            'adjuster' => $adjustment->getAdjuster(),
-            'origin' => $adjustment->getOrigin(),
-            'title' => $adjustment->getTitle(),
-            'description' => $adjustment->getDescription(),
-            'data' => $adjustment->getData(),
-            'amount' => $adjustment->getAmount(),
-            'is_locked' => $adjustment->isLocked(),
-            'is_included' => $adjustment->isIncluded(),
-        ];
+        return $this->eloquentCollection()->count();
     }
 
     private function relation(): MorphMany
@@ -119,6 +128,13 @@ class RelationAdjustmentCollection implements AdjustmentCollection
 
     private function eloquentCollection(): Collection
     {
-        return $this->model->adjustmentsRelation;
+        /** @var Collection $collection */
+        $collection = $this->model->adjustmentsRelation;
+
+        if (null === $this->typeFilter) {
+            return $collection;
+        }
+
+        return $collection->filter(fn (Adjustment $adjustment) => $this->typeFilter->equals($adjustment->type));
     }
 }

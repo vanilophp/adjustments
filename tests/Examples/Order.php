@@ -15,10 +15,7 @@ declare(strict_types=1);
 namespace Vanilo\Adjustments\Tests\Examples;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Vanilo\Adjustments\Contracts\Adjustable;
-use Vanilo\Adjustments\Contracts\AdjustmentCollection as AdjustmentCollectionContract;
-use Vanilo\Adjustments\Models\Adjustment;
 use Vanilo\Adjustments\Support\HasAdjustmentsViaRelation;
 
 /**
@@ -32,7 +29,7 @@ class Order extends Model implements Adjustable
 
     public function itemsTotal(): float
     {
-        return 0;
+        return $this->items_total;
     }
 
     public function recalculateAdjustments(): void

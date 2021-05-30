@@ -82,7 +82,7 @@ class ArrayAdjustmentCollection implements AdjustmentCollectionContract
 
     public function byType(AdjustmentType $type): AdjustmentCollectionContract
     {
-        $result = new self();
+        $result = new self($this->adjustable);
         foreach ($this->items as $adjustment) {
             if ($type->equals($adjustment->getType())) {
                 $result->add($adjustment);

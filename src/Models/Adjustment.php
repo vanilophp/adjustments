@@ -89,11 +89,17 @@ class Adjustment extends Model implements AdjustmentContract
         return $this->adjustable;
     }
 
+    public function setAdjustable(Adjustable $adjustable): void
+    {
+        $this->adjustable_type = $adjustable->getMorphClass();
+        $this->adjustable_id = $adjustable->id;
+    }
+
     public function getAdjuster(): Adjuster
     {
         $adjusterType = $this->adjuster;
         if (class_exists($this->adjuster)) {
-            return forward_static_call([$adjusterType, 'fromAdjustable'], $this->getAdjustable());
+            return forward_static_call([$adjusterType, 'reproduceFromAdjustment'], $this);
         }
     }
 
@@ -114,7 +120,7 @@ class Adjustment extends Model implements AdjustmentContract
 
     public function getAmount(): float
     {
-        return $this->amount;
+        return floatval($this->amount);
     }
 
     public function setAmount(float $amount): void

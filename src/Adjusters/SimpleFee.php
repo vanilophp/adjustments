@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 /**
- * Contains the SimpleShippingFee class.
+ * Contains the SimpleFee class.
  *
  * @copyright   Copyright (c) 2021 Attila Fulop
  * @author      Attila Fulop
  * @license     MIT
- * @since       2021-05-28
+ * @since       2021-05-30
  *
  */
 
@@ -23,7 +23,7 @@ use Vanilo\Adjustments\Support\HasWriteableTitleAndDescription;
 use Vanilo\Adjustments\Support\IsLockable;
 use Vanilo\Adjustments\Support\IsNotIncluded;
 
-final class SimpleShippingFee implements Adjuster
+final class SimpleFee implements Adjuster
 {
     use HasWriteableTitleAndDescription;
     use IsLockable;
@@ -33,17 +33,16 @@ final class SimpleShippingFee implements Adjuster
 
     private ?float $freeThreshold;
 
-    public function __construct(float $amount, ?float $freeThreshold = null)
+    public function __construct(float $amount)
     {
         $this->amount = $amount;
-        $this->freeThreshold = $freeThreshold;
     }
 
     public static function reproduceFromAdjustment(Adjustment $adjustment): Adjuster
     {
         $data = $adjustment->getData();
 
-        return new self(floatval($data['amount'] ?? 0), $data['freeThreshold'] ?? null);
+        return new self(floatval($data['amount'] ?? 0));
     }
 
     public function createAdjustment(Adjustable $adjustable): Adjustment
@@ -55,18 +54,9 @@ final class SimpleShippingFee implements Adjuster
 
     public function recalculate(Adjustment $adjustment, Adjustable $adjustable): Adjustment
     {
-        $adjustment->setAmount($this->calculateAmount($adjustable));
+        $adjustment->setAmount($this->amount);
 
         return $adjustment;
-    }
-
-    private function calculateAmount(Adjustable $adjustable): float
-    {
-        if (null !== $this->freeThreshold && $adjustable->itemsTotal() >= $this->freeThreshold) {
-            return 0;
-        }
-
-        return $this->amount;
     }
 
     private function getModelAttributes(Adjustable $adjustable): array
@@ -77,8 +67,8 @@ final class SimpleShippingFee implements Adjuster
             'origin' => null,
             'title' => $this->getTitle(),
             'description' => $this->getDescription(),
-            'data' => ['amount' => $this->amount, 'freeThreshold' => $this->freeThreshold],
-            'amount' => $this->calculateAmount($adjustable),
+            'data' => ['amount' => $this->amount],
+            'amount' => $this->amount,
             'is_locked' => $this->isLocked(),
             'is_included' => $this->isIncluded(),
         ];
