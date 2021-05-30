@@ -15,7 +15,6 @@ declare(strict_types=1);
 namespace Vanilo\Adjustments\Tests\Feature;
 
 use Vanilo\Adjustments\Adjusters\SimpleFee;
-use Vanilo\Adjustments\Models\AdjustmentType;
 use Vanilo\Adjustments\Tests\Examples\Order;
 use Vanilo\Adjustments\Tests\TestCase;
 
