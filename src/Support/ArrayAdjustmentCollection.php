@@ -72,7 +72,6 @@ class ArrayAdjustmentCollection implements AdjustmentCollectionContract
 
     public function remove(Adjustment $adjustment): void
     {
-
         foreach ($this->items as $key => $item) {
             if ($item === $adjustment) {
                 unset($this->items[$key]);
