@@ -176,6 +176,25 @@ class AdjustmentTest extends TestCase
     }
 
     /** @test */
+    public function data_fields_can_be_obtained_using_the_dot_notation()
+    {
+        $adjustment = Adjustment::create([
+            'type' => AdjustmentType::PROMOTION,
+            'adjustable_type' => 'order',
+            'adjustable_id' => 1,
+            'adjuster' => 'fixed_amount',
+            'title' => 'Sales tax',
+            'data' => ['percent' => 10, 'customer' => ['group' => 1, 'type' => 'gov']]
+        ]);
+
+        $this->assertEquals(10, $adjustment->getData('percent'));
+        $this->assertEquals(1, $adjustment->getData('customer.group'));
+        $this->assertEquals('gov', $adjustment->getData('customer.type'));
+        $this->assertEquals(['group' => 1, 'type' => 'gov'], $adjustment->getData('customer'));
+        $this->assertNull($adjustment->getData('meow'));
+    }
+
+    /** @test */
     public function it_can_be_locked()
     {
         $adjustment = Adjustment::create([

@@ -17,6 +17,7 @@ namespace Vanilo\Adjustments\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Arr;
 use Konekt\Enum\Eloquent\CastsEnums;
 use Vanilo\Adjustments\Contracts\Adjustable;
 use Vanilo\Adjustments\Contracts\Adjuster;
@@ -128,9 +129,9 @@ class Adjustment extends Model implements AdjustmentContract
         $this->amount = $amount;
     }
 
-    public function getData(): array
+    public function getData(string $key = null)
     {
-        return $this->data;
+        return Arr::get($this->data, $key);
     }
 
     public function isCharge(): bool

@@ -32,7 +32,7 @@ interface Adjustment
 
     public function setAmount(float $amount): void;
 
-    public function getData(): array;
+    public function getData(string $key = null);
 
     /**
      * Adjustments that increase the total are called "charges".
