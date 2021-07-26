@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Vanilo\Adjustments\Support;
 
+use ArrayIterator;
 use Vanilo\Adjustments\Contracts\Adjustable;
 use Vanilo\Adjustments\Contracts\Adjuster;
 use Vanilo\Adjustments\Contracts\Adjustment;
@@ -128,5 +129,10 @@ class ArrayAdjustmentCollection implements AdjustmentCollectionContract
     public function last(): ?Adjustment
     {
         return $this->items[$this->count() - 1] ?? null;
+    }
+
+    public function getIterator()
+    {
+        return new ArrayIterator($this->items);
     }
 }

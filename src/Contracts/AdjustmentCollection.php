@@ -16,8 +16,9 @@ namespace Vanilo\Adjustments\Contracts;
 
 use ArrayAccess;
 use Countable;
+use IteratorAggregate;
 
-interface AdjustmentCollection extends ArrayAccess, Countable
+interface AdjustmentCollection extends IteratorAggregate, ArrayAccess, Countable
 {
     public function adjustable(): Adjustable;
 

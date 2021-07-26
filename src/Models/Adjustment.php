@@ -127,6 +127,7 @@ class Adjustment extends Model implements AdjustmentContract
     public function setAmount(float $amount): void
     {
         $this->amount = $amount;
+        $this->save();
     }
 
     public function getData(string $key = null)

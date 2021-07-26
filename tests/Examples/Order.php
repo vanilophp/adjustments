@@ -17,6 +17,7 @@ namespace Vanilo\Adjustments\Tests\Examples;
 use Illuminate\Database\Eloquent\Model;
 use Vanilo\Adjustments\Contracts\Adjustable;
 use Vanilo\Adjustments\Support\HasAdjustmentsViaRelation;
+use Vanilo\Adjustments\Support\RecalculatesAdjustments;
 
 /**
  * @method static Order create(array $attributes = [])
@@ -24,17 +25,13 @@ use Vanilo\Adjustments\Support\HasAdjustmentsViaRelation;
 class Order extends Model implements Adjustable
 {
     use HasAdjustmentsViaRelation;
+    use RecalculatesAdjustments;
 
     protected $guarded = ['created_at', 'updated_at'];
 
     public function itemsTotal(): float
     {
         return $this->items_total;
-    }
-
-    public function recalculateAdjustments(): void
-    {
-        // TODO: Implement recalculateAdjustments() method.
     }
 
     public function total(): float
