@@ -33,6 +33,10 @@ interface AdjustmentCollection extends ArrayAccess, Countable
 
     public function remove(Adjustment $adjustment): void;
 
+    public function first(): ?Adjustment;
+
+    public function last(): ?Adjustment;
+
     /** Returns a **copy** of the collection containing the entries of the given type */
     public function byType(AdjustmentType $type): AdjustmentCollection;
 }

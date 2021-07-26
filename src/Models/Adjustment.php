@@ -135,12 +135,12 @@ class Adjustment extends Model implements AdjustmentContract
 
     public function isCharge(): bool
     {
-        return $this->amount < 0;
+        return $this->amount > 0;
     }
 
     public function isCredit(): bool
     {
-        return $this->amount > 0;
+        return $this->amount < 0;
     }
 
     public function isIncluded(): bool

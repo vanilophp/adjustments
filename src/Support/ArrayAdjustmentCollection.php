@@ -119,4 +119,14 @@ class ArrayAdjustmentCollection implements AdjustmentCollectionContract
     {
         return count($this->items);
     }
+
+    public function first(): ?Adjustment
+    {
+        return $this->items[0] ?? null;
+    }
+
+    public function last(): ?Adjustment
+    {
+        return $this->items[$this->count() - 1] ?? null;
+    }
 }

@@ -29,4 +29,14 @@ class SimpleFeeTest extends TestCase
         $this->assertCount(1, $order->adjustments());
         $this->assertEquals(3.44, $order->adjustments()->total());
     }
+
+    public function it_is_a_charge_and_not_a_credit()
+    {
+        $order = Order::create(['items_total' => 15]);
+        $order->adjustments()->create(new SimpleFee(4));
+
+        $this->assertEquals(19, $order->total());
+        $this->assertTrue($order->adjustments()->first()->isCharge());
+        $this->assertFalse($order->adjustments()->first()->isCredit());
+    }
 }

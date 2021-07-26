@@ -121,6 +121,16 @@ class RelationAdjustmentCollection implements AdjustmentCollection
         return $this->eloquentCollection()->count();
     }
 
+    public function first(): ?Adjustment
+    {
+        return $this->eloquentCollection()->first();
+    }
+
+    public function last(): ?Adjustment
+    {
+        return $this->eloquentCollection()->last();
+    }
+
     private function relation(): MorphMany
     {
         return $this->model->adjustmentsRelation();

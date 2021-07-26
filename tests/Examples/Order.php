@@ -36,4 +36,9 @@ class Order extends Model implements Adjustable
     {
         // TODO: Implement recalculateAdjustments() method.
     }
+
+    public function total(): float
+    {
+        return $this->itemsTotal() + $this->adjustments()->total();
+    }
 }

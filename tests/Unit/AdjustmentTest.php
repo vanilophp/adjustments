@@ -251,4 +251,19 @@ class AdjustmentTest extends TestCase
         $this->assertInstanceOf(Adjuster::class, $adjustment->getAdjuster());
         $this->assertInstanceOf(SimpleShippingFee::class, $adjustment->getAdjuster());
     }
+
+    /** @test */
+    public function it_is_a_charge_if_it_increases_the_total()
+    {
+        $adjustment = Adjustment::create([
+            'type' => AdjustmentType::TAX,
+            'adjustable_type' => 'order',
+            'adjustable_id' => 1,
+            'adjuster' => 'fixed_amount',
+            'title' => 'Sales tax',
+        ]);
+
+        $this->assertInstanceOf(Adjustment::class, $adjustment);
+        $this->assertInstanceOf(AdjustmentContract::class, $adjustment);
+    }
 }
